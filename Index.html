@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lisium Corp</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <header>
+        <h1>Lisium Corp</h1>
+        <p>Bienvenido a nuestra página web.</p>
+    </header>
+
+    <!-- Sección de Acerca de -->
+    <section id="about">
+        <h2>Acerca de</h2>
+        <p>Está es una página web en constante desarrollo, así que puede tener fallas.</p>
+    </section>
+<!-- Sección para el video -->
+<section id="video">
+    <h2>Videos</h2>
+    <div class="video-container">
+        <video width="100%" height="auto" controls>
+            <!-- Ruta correcta del video en la carpeta 'Videos' -->
+            <source src="videos/bailando.mp4" type="video/mp4">
+            <!-- Otros formatos de video si los tienes (opcional) -->
+            <source src="videos/bailando.webm" type="video/webm">
+            <source src="videos/bailando.ogv" type="video/ogg">
+            Tu navegador no soporta el elemento de video.
+        </video>
+    </div>
+</section>
+
+
+    <!-- Modal de Términos y Condiciones -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <h2>Términos y Condiciones</h2>
+            <p>Por favor, lee y acepta nuestros términos y condiciones para continuar usando nuestro sitio web.</p>
+            <p>Al hacer clic en "Aceptar", estás de acuerdo con los términos y condiciones de nuestro servicio.</p>
+            <button class="btn" onclick="acceptTerms()">Aceptar</button>
+            <button class="btn btn-denegar" onclick="denyTerms()">Denegar</button>
+        </div>
+    </div>
+
+
+    <!-- Sección para imágenes -->
+    <section id="images">
+        <h2>Imágenes</h2>
+        <img src="imagen1.jpg" alt="Imagen 1" width="500">
+        <img src="imagen2.jpg" alt="Imagen 2" width="500">
+    </section>
+
+
+
+    <!-- Mover el script al final -->
+    <script src="scripts.js"></script>
+</body>
+</html>
