@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Lisium-Corp</title>
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Arial', monospace;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+        }
+
+        /* Cursor personalizado */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .custom-cursor::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: cursor-pulse 2s infinite;
+        }
+
+        @keyframes cursor-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Canvas de partículas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 100%);
+        }
+
+        /* Contenedor principal */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header futurista */
+        .futuristic-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Navegación holográfica */
+        .holo-nav {
+            position: relative;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            left: 100%;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: #00ffff;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Secciones principales */
+        .section {
+            min-height: 100vh;
+            padding: 100px 2rem 50px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: title-glow 3s ease-in-out infinite alternate;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .hero-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glitch 2s infinite;
+            opacity: 0;
+        }
+
+        @keyframes title-glow {
+            0% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8)); }
+            100% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.8)); }
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { opacity: 0; }
+            95% { opacity: 1; transform: translate(-2px, 2px); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            animation: fade-in-up 1s ease 0.5s both;
+        }
+
+        /* Tarjetas holográficas */
+        .holo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .holo-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .holo-card:hover::before {
+            opacity: 1;
+        }
+
+        .holo-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 255, 255, 0.05);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .holo-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            transition: background 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .card-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Botones futuristas */
+        .cyber-button {
+            position: relative;
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+        }
+
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+
+        .cyber-button:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Elementos flotantes */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        /* Panel de control futurista */
+        .control-panel {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .control-item {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: #00ffff;
+        }
+
+        .control-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* Visualizador de audio */
+        .audio-visualizer {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            display: flex;
+            align-items: end;
+            gap: 3px;
+            height: 100px;
+            z-index: 1000;
+        }
+
+        .audio-bar {
+            width: 4px;
+            background: linear-gradient(to top, #00ffff, #ff00ff);
+            transition: height 0.1s ease;
+            border-radius: 2px;
+            min-height: 10px;
+        }
+
+        /* Red neuronal */
+        #neural-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Texto con efecto glitch */
+        .glitch-text {
+            position: relative;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Animaciones de entrada */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Terminal futurista */
+        .cyber-terminal {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            position: relative;
+            overflow: hidden;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .terminal-title {
+            color: #00ff00;
+            font-size: 0.9rem;
+        }
+
+        .terminal-content {
+            min-height: 150px;
+            line-height: 1.4;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #00ff00;
+            animation: cursor-blink 1s infinite;
+        }
+
+        @keyframes cursor-blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Media queries responsivas */
+        @media (max-width: 768px) {
+            .futuristic-header {
+                padding: 0 1rem;
+                flex-direction: column;
+                height: auto;
+                padding: 1rem;
+            }
+            
+            .holo-nav {
+                margin-top: 1rem;
+                gap: 1rem;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .control-panel {
+                position: static;
+                transform: none;
+                margin-top: 2rem;
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .section {
+                padding: 120px 1rem 50px;
+            }
+            
+            .holo-cards {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .audio-visualizer {
+                bottom: 1rem;
+                left: 1rem;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    
+    <!-- Canvas para partículas -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- Elementos flotantes -->
+    <div class="floating-elements"></div>
+    
+    <!-- Header futurista -->
+    <header class="futuristic-header">
+        <div class="logo">CYBERWEB</div>
+        <nav class="holo-nav">
+            <a href="#home" class="nav-item active">INICIO</a>
+            <a href="#about" class="nav-item">ACERCA</a>
+            <a href="#services" class="nav-item">SERVICIOS</a>
+            <a href="#tech" class="nav-item">TECNOLOGÍA</a>
+            <a href="#contact" class="nav-item">CONTACTO</a>
+        </nav>
+    </header>
+    
+    <!-- Panel de control lateral -->
+    <div class="control-panel">
+        <div class="control-item" title="Configuración">⚙</div>
+        <div class="control-item" title="Información">ℹ</div>
+        <div class="control-item" title="Estadísticas">📊</div>
+        <div class="control-item" title="Notificaciones">🔔</div>
+    </div>
+    
+    <!-- Visualizador de audio -->
+    <div class="audio-visualizer">
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Sección Hero -->
+        <section id="home" class="section hero">
+            <div>
+                <h1 class="hero-title glitch-text" data-text="FUTURO DIGITAL">FUTURO DIGITAL</h1>
+                <p class="hero-subtitle animate-on-scroll">Explorando las fronteras de la tecnología y el diseño</p>
+                <a href="#services" class="cyber-button">EXPLORAR AHORA</a>
+            </div>
+        </section>
+        
+        <!-- Sección Acerca -->
+        <section id="about" class="section">
+            <div style="max-width: 1200px; width: 100%;">
+                <h2 class="glitch-text animate-on-scroll" style="text-align: center; margin-bottom: 3rem;">ACERCA DE NOSOTROS</h2>
+                <div class="holo-cards">
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">🎨</div>
+                            <h3 class="card-title">Diseño UX/UI</h3>
+                            <p class="card-description">Interfaces futuristas que combinan estética cyberpunk con funcionalidad intuitiva, creando experiencias memorables.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">🧠</div>
+                            <h3 class="card-title">IA & Machine Learning</h3>
+                            <p class="card-description">Integración de inteligencia artificial y aprendizaje automático para crear soluciones inteligentes y adaptativas.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">🔐</div>
+                            <h3 class="card-title">Ciberseguridad</h3>
+                            <p class="card-description">Protección avanzada con sistemas de seguridad de nivel militar, encriptación cuántica y monitoreo en tiempo real.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">☁️</div>
+                            <h3 class="card-title">Cloud Computing</h3>
+                            <p class="card-description">Infraestructura en la nube escalable y resiliente, optimizada para el rendimiento y la disponibilidad máxima.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">📱</div>
+                            <h3 class="card-title">Apps Móviles</h3>
+                            <p class="card-description">Aplicaciones móviles nativas y multiplataforma con interfaces futuristas y funcionalidades avanzadas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección Tecnología -->
+        <section id="tech" class="section">
+            <div style="max-width: 1200px; width: 100%;">
+                <h2 class="glitch-text animate-on-scroll" style="text-align: center; margin-bottom: 3rem;">TECNOLOGÍA NEURAL</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+                    <div>
+                        <canvas id="neural-canvas"></canvas>
+                    </div>
+                    <div class="animate-on-scroll">
+                        <h3 style="color: #00ffff; margin-bottom: 1rem; font-size: 1.8rem;">Red Neuronal Avanzada</h3>
+                        <p style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            Nuestra red neuronal procesa millones de datos en tiempo real, 
+                            adaptándose continuamente para optimizar la experiencia del usuario 
+                            y anticipar sus necesidades.
+                        </p>
+                        <div class="cyber-terminal">
+                            <div class="terminal-header">
+                                <div class="terminal-title">SISTEMA_NEURAL v3.7.9</div>
+                            </div>
+                            <div class="terminal-content">
+                                <div class="terminal-line">> Inicializando red neuronal...</div>
+                                <div class="terminal-line">> Cargando módulos de IA...</div>
+                                <div class="terminal-line">> Conectando nodos: 2,847,392</div>
+                                <div class="terminal-line">> Estado: ACTIVO</div>
+                                <div class="terminal-line">> Eficiencia: 99.7%</div>
+                                <div class="terminal-line">> Latencia: 0.003ms</div>
+                                <div class="terminal-line">> <span class="terminal-cursor"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección Contacto -->
+        <section id="contact" class="section">
+            <div style="max-width: 800px; width: 100%; text-align: center;">
+                <h2 class="glitch-text animate-on-scroll" style="margin-bottom: 3rem;">CONEXIÓN ESTABLECIDA</h2>
+                <p class="animate-on-scroll" style="font-size: 1.2rem; margin-bottom: 2rem; color: rgba(255,255,255,0.8);">
+                    ¿Listo para dar el salto al futuro digital? Conectemos y creemos algo extraordinario juntos.
+                </p>
+                
+                <div class="holo-cards" style="margin-top: 3rem;">
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">📡</div>
+                            <h3 class="card-title">Comunicación Directa</h3>
+                            <p class="card-description">
+                                Email: contact@cyberweb.future<br>
+                                Teléfono: +1 (555) CYBER-99<br>
+                                Discord: CyberWeb#2077
+                            </p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">🌐</div>
+                            <h3 class="card-title">Redes Sociales</h3>
+                            <p class="card-description">
+                                Síguenos en nuestras plataformas digitales para contenido exclusivo y actualizaciones en tiempo real.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">🏢</div>
+                            <h3 class="card-title">Ubicación</h3>
+                            <p class="card-description">
+                                Cyber District, Neo Tokyo<br>
+                                Sector 7, Edificio Nexus<br>
+                                Piso 42, Oficina Quantum
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 3rem;">
+                    <a href="#home" class="cyber-button">INICIAR TRANSMISIÓN</a>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // Inicialización cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            createParticleSystem();
+            initializeHolographicCards();
+            setupNavigation();
+            createFloatingElements();
+            initializeGlitchEffects();
+            setupScrollAnimations();
+            createNeuralNetwork();
+        }
+
+        // Sistema de partículas 3D
+        function createParticleSystem() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const particles = [];
+            const particleCount = 100;
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.z = Math.random() * 1000;
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.vy = (Math.random() - 0.5) * 2;
+                    this.vz = (Math.random() - 0.5) * 5;
+                    this.size = Math.random() * 3 + 1;
+                    this.opacity = Math.random();
+                    this.color = `hsl(${Math.random() * 60 + 180}, 70%, 60%)`;
+                }
+                
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.z += this.vz;
+                    
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                    if (this.z < 0 || this.z > 1000) this.vz *= -1;
+                    
+                    this.opacity = Math.sin(Date.now() * 0.01 + this.z * 0.01) * 0.5 + 0.5;
+                }
+                
+                draw() {
+                    const scale = 1000 / (1000 + this.z);
+                    const x2d = this.x * scale;
+                    const y2d = this.y * scale;
+                    const size2d = this.size * scale;
+                    
+                    ctx.save();
+                    ctx.globalAlpha = this.opacity * 0.8;
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = this.color;
+                    ctx.beginPath();
+                    ctx.arc(x2d, y2d, size2d, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+            
+            function animate() {
+                ctx.fillStyle = 'rgba(5, 5, 15, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                // Conectar partículas cercanas
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.save();
+                            ctx.strokeStyle = `rgba(100, 200, 255, ${0.3 - distance / 300})`;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            // Redimensionar canvas
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // Tarjetas holográficas interactivas
+        function initializeHolographicCards() {
+            const cards = document.querySelectorAll('.holo-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 10;
+                    const rotateY = (centerX - x) / 10;
+                    
+                    card.style.transform = `
+                        perspective(1000px) 
+                        rotateX(${rotateX}deg) 
+                        rotateY(${rotateY}deg) 
+                        translateZ(20px)
+                    `;
+                    
+                    // Efecto de brillo seguidor
+                    const shine = card.querySelector('.card-shine');
+                    if (shine) {
+                        shine.style.background = `
+                            radial-gradient(circle at ${x}px ${y}px, 
+                            rgba(255,255,255,0.3) 0%, 
+                            transparent 50%)
+                        `;
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+                });
+            });
+        }
+
+        // Navegación futurista
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach((item, index) => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remover clase activa de todos los items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Scroll suave a la sección
+                    const targetId = item.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    // Efecto de onda
+                    createRippleEffect(e.target, e);
+                });
+            });
+        }
+
+        // Crear efecto de onda
+        function createRippleEffect(element, event) {
+            const ripple = document.createElement('span');
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(0, 255, 255, 0.6);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                left: ${x}px;
+                top: ${y}px;
+                width: ${size}px;
+                height: ${size}px;
+                pointer-events: none;
+            `;
+            
+            element.style.position = 'relative';
+            element.style.overflow = 'hidden';
+            element.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // Elementos flotantes
+        function createFloatingElements() {
+            const container = document.querySelector('.floating-elements');
+            if (!container) return;
+            
+            const shapes = ['◆', '▲', '●', '■', '◇', '△'];
+            
+            for (let i = 0; i < 15; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-shape';
+                element.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                element.style.cssText = `
+                    position: absolute;
+                    color: hsl(${Math.random() * 60 + 180}, 70%, 60%);
+                    font-size: ${Math.random() * 20 + 10}px;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${Math.random() * 10 + 5}s infinite linear;
+                    opacity: 0.3;
+                    pointer-events: none;
+                `;
+                
+                container.appendChild(element);
+            }
+        }
+
+        // Efectos de glitch
+        function initializeGlitchEffects() {
+            const glitchElements = document.querySelectorAll('.glitch-text');
+            
+            glitchElements.forEach(element => {
+                const originalText = element.textContent;
+                
+                setInterval(() => {
+                    if (Math.random() < 0.1) {
+                        const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+                        let glitchedText = '';
+                        
+                        for (let i = 0; i < originalText.length; i++) {
+                            if (Math.random() < 0.1) {
+                                glitchedText += chars[Math.floor(Math.random() * chars.length)];
+                            } else {
+                                glitchedText += originalText[i];
+                            }
+                        }
+                        
+                        element.textContent = glitchedText;
+                        
+                        setTimeout(() => {
+                            element.textContent = originalText;
+                        }, 100);
+                    }
+                }, 2000);
+            });
+        }
+
+        // Animaciones de scroll
+        function setupScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Red neuronal visual
+        function createNeuralNetwork() {
+            const canvas = document.getElementById('neural-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 300;
+            
+            const nodes = [];
+            const connections = [];
+            
+            // Crear nodos
+            for (let i = 0; i < 20; i++) {
+                nodes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    radius: Math.random() * 3 + 2,
+                    activity: Math.random()
+                });
+            }
+            
+            // Crear conexiones
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    if (Math.random() < 0.1) {
+                        connections.push({
+                            from: i,
+                            to: j,
+                            strength: Math.random()
+                        });
+                    }
+                }
+            }
+            
+            function animateNeuralNetwork() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Actualizar y dibujar conexiones
+                connections.forEach(conn => {
+                    const from = nodes[conn.from];
+                    const to = nodes[conn.to];
+                    
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${conn.strength * 0.5})`;
+                    ctx.lineWidth = conn.strength * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(to.x, to.y);
+                    ctx.stroke();
+                    
+                    conn.strength = Math.sin(Date.now() * 0.01 + conn.from + conn.to) * 0.5 + 0.5;
+                });
+                
+                // Actualizar y dibujar nodos
+                nodes.forEach(node => {
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    
+                    if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                    if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+                    
+                    node.activity = Math.sin(Date.now() * 0.005 + node.x * 0.01) * 0.5 + 0.5;
+                    
+                    ctx.fillStyle = `rgba(0, 255, 255, ${node.activity})`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = 'cyan';
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animateNeuralNetwork);
+            }
+            
+            animateNeuralNetwork();
+        }
+
+        // Cursor personalizado
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.custom-cursor');
+            if (cursor) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            }
+        });
+
+        // Efectos de audio visuales (simulados)
+        function createAudioVisualizer() {
+            const bars = document.querySelectorAll('.audio-bar');
+            
+            setInterval(() => {
+                bars.forEach(bar => {
+                    const height = Math.random() * 100;
+                    bar.style.height = height + '%';
+                    bar.style.backgroundColor = `hsl(${height * 3}, 70%, 60%)`;
+                });
+            }, 100);
+        }
+
+        // Inicializar visualizador de audio
+        setTimeout(createAudioVisualizer, 1000);
+    </script>
+</body>
+</html>d-icon">🚀</div>
+                            <h3 class="card-title">Innovación</h3>
+                            <p class="card-description">Creamos experiencias digitales que trascienden las expectativas, combinando tecnología de vanguardia con diseño revolucionario.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">⚡</div>
+                            <h3 class="card-title">Velocidad</h3>
+                            <p class="card-description">Optimización extrema y rendimiento superior en cada proyecto, garantizando experiencias fluidas y responsivas.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">🔮</div>
+                            <h3 class="card-title">Futuro</h3>
+                            <p class="card-description">Anticipamos las tendencias tecnológicas del mañana, creando soluciones que perduran en el tiempo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección Servicios -->
+        <section id="services" class="section">
+            <div style="max-width: 1200px; width: 100%;">
+                <h2 class="glitch-text animate-on-scroll" style="text-align: center; margin-bottom: 3rem;">SERVICIOS</h2>
+                <div class="holo-cards">
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-icon">💻</div>
+                            <h3 class="card-title">Desarrollo Web</h3>
+                            <p class="card-description">Aplicaciones web avanzadas con tecnologías de última generación, interfaces inmersivas y experiencias de usuario excepcionales.</p>
+                        </div>
+                    </div>
+                    <div class="holo-card animate-on-scroll">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="car
